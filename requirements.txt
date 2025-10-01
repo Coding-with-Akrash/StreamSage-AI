@@ -1,0 +1,9 @@
+streamlit
+streamlit-chat
+openai
+requests
+Pillow
+beautifulsoup4
+psutil
+toml
+langchain
