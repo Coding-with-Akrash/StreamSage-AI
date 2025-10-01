@@ -29,12 +29,16 @@ TEMPERATURE_DEFAULT = 0.7
 
 # Retrieve and validate API key
 try:
-    # Try to load from environment variable first
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    # Try to load from session state first (dynamic per user session)
+    if "user_api_key" in st.session_state and st.session_state.user_api_key:
+        OPENAI_API_KEY = st.session_state.user_api_key
+    else:
+        # Fallback to environment variable
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-    # Fallback to Streamlit's default secrets
-    if not OPENAI_API_KEY:
-        OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", None)
+        # Final fallback to Streamlit's default secrets
+        if not OPENAI_API_KEY:
+            OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", None)
 
     # Validate API key
     if not OPENAI_API_KEY:
@@ -52,36 +56,106 @@ try:
         raise Exception("Placeholder API key detected")
 
 except Exception as e:
-    st.error("🔑 **OpenAI API Key Required**")
-    st.info("🔧 **Please use the '🔑 API Configuration' tab in the sidebar to set up your API key.**")
+    # Dynamic API Key Input Form - Shows every time app opens without API key
+    st.markdown("""
+    <div style="background: rgba(26, 32, 44, 0.9); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255, 154, 158, 0.3); margin: 1rem 0;">
+        <h2 style="color: #ffffff; margin-top: 0; text-align: center;">🔑 Enter Your OpenAI API Key</h2>
+        <p style="color: #e2e8f0; text-align: center; margin-bottom: 2rem;">
+            Please enter your OpenAI API key to start using StreamSage AI Assistant
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Check environment variable status
-    current_api_key = os.getenv("OPENAI_API_KEY")
-    if current_api_key:
-        if "your-openai-api-key-here" in current_api_key or "sk-your-actual-openai-api-key-here" in current_api_key:
-            st.error("❌ **Placeholder API Key Detected!**")
-            st.warning("🔧 **You need to replace the placeholder text with your real OpenAI API key**")
-            st.info("📝 **Use the '🔑 API Configuration' tab to configure your API key.**")
-        else:
-            st.warning("⚠️ **API key found but may be invalid. Please check:**")
-            st.info("• Ensure your API key starts with 'sk-'")
-            st.info("• Verify the key is copied completely")
-            st.info("• Check that your OpenAI account has credits")
-            st.info("🔧 **Use the '🔑 API Configuration' tab to test and update your API key.**")
-    else:
-        st.error("❌ **No API key found in environment variables!**")
-        st.info("🔧 **Use the '🔑 API Configuration' tab to set up your API key.**")
+    # API Key Input Form
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        user_api_key = st.text_input(
+            "🔑 OpenAI API Key",
+            type="password",
+            placeholder="sk-your-openai-api-key-here",
+            help="Enter your OpenAI API key (starts with 'sk-')",
+            key="dynamic_api_input"
+        )
+
+    with col2:
+        if st.button("Start StreamSage", type="primary", use_container_width=True, key="start_with_key"):
+            if user_api_key and user_api_key.startswith("sk-"):
+                # Store API key in session state for this session
+                st.session_state.user_api_key = user_api_key
+
+                # Check for placeholder text
+                placeholder_texts = [
+                    "your-openai-api-key-here",
+                    "sk-your-actual-openai-api-key-here",
+                    "your-ope************here",
+                    "your-api-key-here"
+                ]
+
+                if any(placeholder in user_api_key for placeholder in placeholder_texts):
+                    st.error("❌ **Please enter a real API key, not placeholder text.**")
+                else:
+                    st.success("✅ **API Key accepted! Starting StreamSage...**")
+                    st.rerun()  # Restart the app with the new API key
+            elif user_api_key and not user_api_key.startswith("sk-"):
+                st.error("❌ **Invalid API key format.** API keys should start with 'sk-'")
+            else:
+                st.warning("⚠️ **Please enter your API key first.**")
+
+    # Show setup instructions
+    st.markdown("""
+    <div style="background: rgba(26, 32, 44, 0.8); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255, 154, 158, 0.2); margin: 1rem 0;">
+        <h3 style="color: #ffffff; margin-top: 0;">📋 How to Get Your API Key</h3>
+
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div style="margin: 1.5rem 0;">
+            <h4 style="color: #ff9a9e;">Step 1: Get Your API Key</h4>
+            <p style="color: #e2e8f0; margin-bottom: 1rem;">
+                🌐 Visit: <a href="https://platform.openai.com/api-keys" style="color: #ff9a9e; text-decoration: none;" target="_blank">https://platform.openai.com/api-keys</a>
+            </p>
+            <ol style="color: #e2e8f0; line-height: 1.6;">
+                <li>🔐 Sign up or log in to your OpenAI account</li>
+                <li>🗝️ Navigate to "API Keys" section</li>
+                <li>➕ Click "Create new secret key"</li>
+                <li>📋 Copy the generated key (format: <code>sk-...</code>)</li>
+                <li>💾 Paste it above and click "Start StreamSage"</li>
+            </ol>
+        </div> """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(255, 154, 158, 0.1); border-radius: 10px; border-left: 4px solid #ff9a9e;">
+            <h4 style="color: #ff9a9e; margin-top: 0;">💡 Note</h4>
+            <p style="color: #e2e8f0; margin-bottom: 0;">
+                🔄 You'll need to enter your API key each time you open the app.<br>
+                🚀 Your API key is only stored for this session and will be cleared when you close the app.<br>
+                🔒 For security, consider setting up an environment variable for permanent use.
+            </p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.stop()
 
 # Assign OpenAI API Key
 openai.api_key = OPENAI_API_KEY
-client = openai.OpenAI()
+
+def get_openai_client():
+    """Get OpenAI client with proper API key validation."""
+    try:
+        if not OPENAI_API_KEY:
+            raise Exception("No API key available")
+        return openai.OpenAI(api_key=OPENAI_API_KEY)
+    except Exception as e:
+        st.error(f"❌ **Error initializing OpenAI client:** {str(e)}")
+        st.error("🔑 **Please configure your API key first.**")
+        st.stop()
 
 # Streamlit Page Configuration
 st.set_page_config(
-    page_title="🚀 StreamSage AI - Ultimate Streamlit Assistant",
-    page_icon="imgs/avatar_streamly.png",
+    page_title="StreamSage AI - Ultimate Streamlit Assistant",
+    page_icon="imgs/avatar_streamsage.png",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
@@ -146,7 +220,7 @@ st.set_page_config(
 )
 
 # Professional Title with enhanced styling
-st.markdown('<h1 class="main-title">🚀 StreamSage AI Assistant</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">StreamSage AI Assistant</h1>', unsafe_allow_html=True)
 
 # Premium System Status Bar
 st.markdown("""
@@ -206,11 +280,20 @@ st.markdown("""
 def img_to_base64(image_path):
     """Convert image to base64."""
     try:
+        # Check if file exists before trying to open it
+        if not os.path.exists(image_path):
+            logging.warning(f"Image file not found: {image_path}")
+            return None
+
         with open(image_path, "rb") as img_file:
             return base64.b64encode(img_file.read()).decode()
     except Exception as e:
         logging.error(f"Error converting image to base64: {str(e)}")
         return None
+
+def get_avatar_emoji(role):
+    """Get emoji avatar based on role."""
+    return "🤖" if role == "assistant" else "👤"
 
 def get_system_info():
     """Get comprehensive system information."""
@@ -568,7 +651,7 @@ def on_chat_submit(chat_input, latest_updates, temperature=TEMPERATURE_DEFAULT, 
     st.session_state.conversation_history.append({"role": "user", "content": user_input})
 
     try:
-        model_engine = "gpt-3o-mini"
+        model_engine = "gpt-4o-mini"
         assistant_reply = ""
 
         if "latest updates" in user_input:
@@ -581,6 +664,7 @@ def on_chat_submit(chat_input, latest_updates, temperature=TEMPERATURE_DEFAULT, 
             else:
                 assistant_reply = "No highlights found."
         else:
+            client = get_openai_client()
             response = client.chat.completions.create(
                 model=model_engine,
                 messages=st.session_state.conversation_history,
@@ -633,6 +717,7 @@ Generate only the Python code without markdown formatting."""
             {"role": "user", "content": f"Generate a complete Streamlit application for: {prompt}"}
         ]
 
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -667,6 +752,7 @@ Format your response with clear sections and actionable insights. Be constructiv
             {"role": "user", "content": f"Analyze this Streamlit code and provide comprehensive feedback:\n\n{code}"}
         ]
 
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -701,6 +787,7 @@ Provide specific code improvements with before/after examples. Be technical but 
             {"role": "user", "content": f"Analyze this Streamlit code for performance issues and provide optimization suggestions:\n\n{code}"}
         ]
 
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -735,6 +822,7 @@ Provide a security score (1-10) and specific remediation steps."""
             {"role": "user", "content": f"Security analysis of this Streamlit application:\n\n{code}"}
         ]
 
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -782,6 +870,7 @@ Include detailed comments and documentation."""
             {"role": "user", "content": f"Generate a complete Streamlit template for: {prompt}"}
         ]
 
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -816,6 +905,17 @@ Include code snippets, file structures, and best practices."""
             {"role": "user", "content": f"Create a comprehensive deployment guide for Streamlit on: {platform}"}
         ]
 
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
@@ -1344,42 +1444,20 @@ def main():
     """, unsafe_allow_html=True)
 
     # Load and display sidebar avatar with enhanced styling
-    img_path = "imgs/sidebar_streamly_avatar.png"
+    img_path = "imgs/sidebar_streamsage.png"
     img_base64 = img_to_base64(img_path)
     if img_base64:
         st.sidebar.markdown(
             f'<div style="text-align: center; margin: 1rem 0;"><img src="data:image/png;base64,{img_base64}" class="avatar-glow" style="width: 120px; height: 120px;"></div>',
             unsafe_allow_html=True,
         )
-
-    # Quick Access Buttons below logo
-    st.sidebar.markdown("""
-    <div style="background: rgba(26, 32, 44, 0.8); padding: 1rem; border-radius: 15px; margin: 1rem 0; border: 1px solid rgba(255, 154, 158, 0.2);">
-        <div style="text-align: center; margin-bottom: 1rem;">
-            <p style="color: #ffffff; font-size: 0.9rem; margin: 0; font-weight: 600;">🚀 Quick Access</p>
+    else:
+        # Fallback to emoji if image not available
+        st.sidebar.markdown("""
+        <div style="text-align: center; margin: 1rem 0; font-size: 4rem;">
+            🤖
         </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    col1, col2 = st.sidebar.columns(2)
-
-    with col1:
-        if st.sidebar.button(
-            "🔑\nAPI Config",
-            key="quick_api_config",
-            help="Configure your OpenAI API key",
-            use_container_width=True
-        ):
-            st.session_state.mode_selection = "🔑 API Configuration"
-
-    with col2:
-        if st.sidebar.button(
-            "📢\nUpdates",
-            key="quick_updates",
-            help="Browse latest Streamlit updates",
-            use_container_width=True
-        ):
-            st.session_state.mode_selection = "📢 Latest Updates"
+        """, unsafe_allow_html=True)
 
     # Enhanced Mode Selection
     st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
@@ -1389,8 +1467,8 @@ def main():
     if "mode_selection" in st.session_state:
         try:
             current_mode_index = [
-                "🔑 API Configuration",
-                "📢 Latest Updates",
+                "API Configuration",
+                "Latest Updates",
                 "Chat with StreamSage",
                 "Code Generator",
                 "Project Analyzer",
@@ -1405,8 +1483,8 @@ def main():
     mode = st.sidebar.radio(
         "🎯 Select Mode:",
         options=[
-            "🔑 API Configuration",
-            "📢 Latest Updates",
+            "API Configuration",
+            "Latest Updates",
             "Chat with StreamSage",
             "Code Generator",
             "Project Analyzer",
@@ -1451,9 +1529,31 @@ def main():
         step=100,
         help="Maximum length of AI responses"
     )
-
+    
+    st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+    
+    st.sidebar.markdown("""
+    <div class="sidebar-section" style="margin-top: 2rem; background: rgba(255, 154, 158, 0.05); border: 1px solid rgba(255, 154, 158, 0.2);">
+        <div style="text-align: center; color: #ffffff; font-weight: 500;">
+            <p style="margin: 0.5rem 0; font-size: 0.85rem; line-height: 1.4;">
+                🛠️ Powered by GPT-4o-mini<br>
+                📚 Trained on Streamlit 1.36<br>
+                ⚡ Real-time assistance
+            </p>
+            <div style="margin: 1rem 0 0.5rem 0; padding-top: 1rem;">
+                <p style="font-size: 1rem; color: #ff9a9e; font-weight: 700; margin: 0;">
+                    🚀 Developed by Akrash Noor
+                </p>
+                <p style="font-size: 0.8rem; color: #e2e8f0; margin: 0.5rem 0 0 0; font-style: italic;">
+                    Passionate AI Developer & Streamlit Expert
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.sidebar.markdown('</div>', unsafe_allow_html=True)
-
+    
     # Enhanced Basic Interactions Section
     st.sidebar.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
     show_basic_info = st.sidebar.checkbox("📚 Show Basic Interactions", value=True)
@@ -1505,26 +1605,6 @@ def main():
         if st.button("🔗\nShare", key="share_project", help="Share with others"):
             st.markdown(f"[🔗 Copy Link]({GITHUB_URL})")
 
-    st.sidebar.markdown("""
-    <div class="sidebar-section" style="margin-top: 2rem; background: rgba(255, 154, 158, 0.05); border: 1px solid rgba(255, 154, 158, 0.2);">
-        <div style="text-align: center; color: #ffffff; font-weight: 500;">
-            <p style="margin: 0.5rem 0; font-size: 0.85rem; line-height: 1.4;">
-                🛠️ Powered by GPT-4o-mini<br>
-                📚 Trained on Streamlit 1.36<br>
-                ⚡ Real-time assistance
-            </p>
-            <div style="margin: 1rem 0 0.5rem 0; padding-top: 1rem;">
-                <p style="font-size: 1rem; color: #ff9a9e; font-weight: 700; margin: 0;">
-                    🚀 Developed by Akrash Noor
-                </p>
-                <p style="font-size: 0.8rem; color: #e2e8f0; margin: 0.5rem 0 0 0; font-style: italic;">
-                    Passionate AI Developer & Streamlit Expert
-                </p>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # Premium Footer with Branding
     st.sidebar.markdown("""
     <div style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: rgba(26, 32, 44, 0.8); border-radius: 15px; border: 1px solid rgba(255, 154, 158, 0.1);">
@@ -1559,6 +1639,13 @@ def main():
             f'<div style="text-align: center; margin-top: 1rem;"><img src="data:image/png;base64,{img_base64}" class="avatar-glow" style="width: 80px; height: 80px; border-radius: 10px;"></div>',
             unsafe_allow_html=True,
         )
+    else:
+        # Fallback to text if image not available
+        st.sidebar.markdown("""
+        <div style="text-align: center; margin-top: 1rem; font-size: 2rem; opacity: 0.7;">
+            🚀
+        </div>
+        """, unsafe_allow_html=True)
 
     if mode == "Chat with StreamSage":
         # Enhanced chat input section
@@ -1579,13 +1666,19 @@ def main():
             role = message["role"]
             avatar_image = "imgs/avatar_streamly.png" if role == "assistant" else "imgs/stuser.png" if role == "user" else None
 
-            with st.chat_message(role, avatar=avatar_image):
+            # Use fallback avatar if image doesn't exist
+            if avatar_image and not os.path.exists(avatar_image):
+                avatar_display = get_avatar_emoji(role)
+            else:
+                avatar_display = avatar_image
+
+            with st.chat_message(role, avatar=avatar_display):
                 if role == "user":
                     st.markdown(f'<div class="chat-message chat-user">👤 {message["content"]}</div>',
-                              unsafe_allow_html=True)
+                               unsafe_allow_html=True)
                 else:
                     st.markdown(f'<div class="chat-message chat-assistant">🤖 {message["content"]}</div>',
-                              unsafe_allow_html=True)
+                               unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1762,12 +1855,15 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
 
-    elif mode == "🔑 API Configuration":
+    elif mode == "API Configuration":
         # API Configuration Section
         st.markdown("""
         <div style="background: rgba(26, 32, 44, 0.8); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255, 154, 158, 0.3); margin: 1rem 0;">
             <h3 style="color: #ffffff; margin-top: 0;">🚀 Setup Your OpenAI API Key</h3>
-
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
             <div style="margin: 1.5rem 0;">
                 <h4 style="color: #ff9a9e;">📋 Step 1: Get Your API Key</h4>
                 <p style="color: #e2e8f0; margin-bottom: 1rem;">
@@ -1781,10 +1877,12 @@ def main():
                     <li>💾 Save it securely in a password manager</li>
                 </ol>
             </div>
-
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
             <div style="margin: 1.5rem 0;">
                 <h4 style="color: #fecfef;">⚙️ Step 2: Configure StreamSage</h4>
-
+                <p style="color: #e2e8f0; margin-bottom: 1rem;">
                 <!-- API Key Input Form -->
                 <div style="background: rgba(26, 32, 44, 0.8); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 154, 158, 0.2); margin: 1rem 0;">
                     <h5 style="color: #ffffff; margin-top: 0;">🔑 Enter Your API Key</h5>
@@ -1814,31 +1912,29 @@ def main():
             )
 
         with col2:
-            if st.button("💾 Set Environment Variable", help="Set API key as environment variable", use_container_width=True, key="api_config_save"):
+            if st.button("💾 Use This API Key", help="Use API key for this session", use_container_width=True, key="api_config_save"):
                 if api_key_input and api_key_input.startswith("sk-"):
                     try:
-                        st.info("🔧 **Copy and run this command in your terminal:**")
-                        st.code(f'export OPENAI_API_KEY="{api_key_input}"', language="bash")
+                        # Store API key in session state for this session
+                        st.session_state.user_api_key = api_key_input
 
-                        st.success("✅ **Command generated! Copy and run it in your terminal.**")
-                        st.info("🔄 **Please restart your Streamlit app after setting the environment variable.**")
+                        # Check for placeholder text
+                        placeholder_texts = [
+                            "your-openai-api-key-here",
+                            "sk-your-actual-openai-api-key-here",
+                            "your-ope************here",
+                            "your-api-key-here"
+                        ]
 
-                        # Show restart instructions
-                        st.markdown("""
-                        <div style="background: rgba(255, 154, 158, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                            <h5 style="color: #ff9a9e; margin-top: 0;">&#x1F680; Next Steps</h5>
-                            <p style="color: #e2e8f0; margin-bottom: 0;">
-                                After setting the environment variable:
-                            </p>
-                            <ol style="color: #e2e8f0; margin: 0.5rem 0 0 0;">
-                                <li>🔄 Stop this app (Ctrl+C in terminal)</li>
-                                <li>🚀 Run: <code>export OPENAI_API_KEY="your-key-here" && streamlit run streamsag.py</code></li>
-                            </ol>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        if any(placeholder in api_key_input for placeholder in placeholder_texts):
+                            st.error("❌ **Please enter a real API key, not placeholder text.**")
+                        else:
+                            st.success("✅ **API Key set for this session!**")
+                            st.info("🔄 **The app will now restart with your API key.**")
+                            st.rerun()  # Restart the app with the new API key
 
                     except Exception as e:
-                        st.error(f"❌ **Error generating command:** {str(e)}")
+                        st.error(f"❌ **Error setting API key:** {str(e)}")
                 elif api_key_input and not api_key_input.startswith("sk-"):
                     st.error("❌ **Invalid API key format.** API keys should start with 'sk-'")
                 else:
@@ -1861,7 +1957,7 @@ def main():
 
                             if response.choices[0].message.content:
                                 st.success("✅ **API key is valid!** Your key works correctly.")
-                                st.info("💡 **Tip:** Set this as an environment variable and restart your app to use it.")
+                                st.info("💡 **Tip:** Click 'Use This API Key' to start using it in this session.")
                             else:
                                 st.error("❌ **API key accepted but returned empty response.**")
                                 st.warning("This might indicate account issues or billing problems.")
@@ -1878,37 +1974,36 @@ def main():
                 else:
                     st.warning("⚠️ **Please enter a valid API key first.** (should start with 'sk-')")
 
-            if st.button("📋 Show Command", help="Show environment variable command", use_container_width=True, key="api_config_manual"):
+            if st.button("📋 Show Env Command", help="Show environment variable command (alternative method)", use_container_width=True, key="api_config_manual"):
                 if api_key_input and api_key_input.startswith("sk-"):
-                    st.info("🔧 **Run this command in your terminal to set the API key:**")
+                    st.info("🔧 **Alternative: Run this command in your terminal for permanent setup:**")
                     st.code(f'export OPENAI_API_KEY="{api_key_input}"', language="bash")
-                    st.success("✅ **Command ready! Copy and run it in your terminal.**")
+                    st.success("✅ **Command ready! This sets up the API key permanently.**")
                 else:
                     st.warning("⚠️ **Please enter your API key first to generate the command.**")
 
         st.markdown("""
             <div style="margin: 1.5rem 0;">
-                <h4 style="color: #ff6b9d;">🔧 Environment Variable Setup</h4>
+                <h4 style="color: #ff6b9d;">🔧 Alternative: Environment Variable</h4>
                 <p style="color: #e2e8f0;">
-                    Set the environment variable before running Streamlit:
+                    For permanent setup, set the environment variable:
                 </p>
                 <code style="background: rgba(0,0,0,0.3); color: #ffffff; padding: 0.5rem; border-radius: 8px; display: block; margin: 0.5rem 0;">
                     export OPENAI_API_KEY="sk-your-actual-api-key-here"
                 </code>
             </div>
-
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
             <div style="margin: 1.5rem 0; padding: 1rem; background: rgba(255, 154, 158, 0.1); border-radius: 10px; border-left: 4px solid #ff9a9e;">
-                <h4 style="color: #ff9a9e; margin-top: 0;">💡 Quick Setup</h4>
+                <h4 style="color: #ff9a9e; margin-top: 0;">💡 Session vs Permanent</h4>
                 <p style="color: #e2e8f0; margin-bottom: 1rem;">
-                    Run Streamlit with your API key:
+                    Choose your preferred setup method:
                 </p>
-                <code style="background: rgba(0,0,0,0.5); color: #ffffff; padding: 0.5rem; border-radius: 8px; display: block; margin: 0.5rem 0;">
-                    # Set API key and run Streamlit in one command<br>
-                    export OPENAI_API_KEY="sk-your-key-here" && streamlit run streamsag.py
-                </code>
-                <p style="color: #e2e8f0; margin-bottom: 0; font-size: 0.9rem;">
-                    🔄 Replace <code>sk-your-key-here</code> with your actual OpenAI API key
-                </p>
+                <ul style="color: #e2e8f0; margin: 0.5rem 0 0 0;">
+                    <li><strong>🚀 Session Only:</strong> Enter API key each time you open the app</li>
+                    <li><strong>💾 Permanent:</strong> Set environment variable for automatic detection</li>
+                </ul>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1920,22 +2015,21 @@ def main():
         <div style="margin-top: 2rem; padding: 1rem; background: rgba(254, 207, 239, 0.1); border-radius: 10px; border-left: 4px solid #fecfef;">
             <h4 style="color: #fecfef; margin-top: 0;">🧪 Test Your Setup</h4>
             <p style="color: #e2e8f0; margin-bottom: 1rem;">
-                You can test your API key right here before setting it as an environment variable:
+                You can test your API key right here before using it in this session:
             </p>
             <ol style="color: #e2e8f0; line-height: 1.6;">
                 <li>🔑 Enter your API key in the text box above</li>
                 <li>🧪 Click "Test API Key" to verify it works</li>
-                <li>💾 Click "Set Environment Variable" to get the command</li>
-                <li>🔄 Run the command in your terminal and restart the app</li>
+                <li>💾 Click "Use This API Key" to start using it</li>
                 <li>✅ Enjoy the full StreamSage experience!</li>
             </ol>
             <p style="color: #ff9a9e; margin-top: 1rem; font-size: 0.9rem;">
-                💡 <strong>Pro Tip:</strong> Use the "Test API Key" feature to verify your key works before setting it permanently!
+                💡 <strong>Pro Tip:</strong> Use the "Test API Key" feature to verify your key works before activating it for this session!
             </p>
         </div>
         """, unsafe_allow_html=True)
 
-    elif mode == "📢 Latest Updates":
+    elif mode == "Latest Updates":
         # Enhanced Updates Section with Organized Display
         display_streamlit_updates()
 

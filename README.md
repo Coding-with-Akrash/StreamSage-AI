@@ -6,7 +6,7 @@
 
   [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
   [![Streamlit Version](https://img.shields.io/badge/streamlit-1.36+-red.svg)](https://streamlit.io)
-  [![OpenAI GPT-3o-mini](https://img.shields.io/badge/GPT--4o--mini-powered-green.svg)](https://openai.com)
+  [![OpenAI GPT-4o-mini](https://img.shields.io/badge/GPT--4o--mini-powered-green.svg)](https://openai.com)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![Stars](https://img.shields.io/github/stars/Coding-with-Akrash/StreamSage?style=social)](https://github.com/Coding-with-Akrash/StreamSage)
 </div>
@@ -18,7 +18,7 @@
 - 📊 **Real-time Project Analysis** - Get expert feedback on your code
 - 🐛 **Intelligent Debugging** - Fix errors and optimize performance
 - 🎨 **Modern Dark Theme** - Professional, eye-friendly interface
-- ⚡ **Lightning Fast** - Powered by GPT-3o-mini for instant responses
+- ⚡ **Lightning Fast** - Powered by GPT-4o-mini for instant responses
 - 📢 **Live Updates Browser** - Real-time Streamlit version browsing with web scraping
 
 ### 🚀 **Why Choose StreamSage?**
@@ -159,7 +159,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### **Connect with Developer**
 - 🐙 **GitHub**: [@Coding-with-Akrash](https://github.com/Coding-with-Akrash)
-- 📧 **Email**: akrashnoor2580@gmail.com
+- 📧 **Email**: akrash.noor@example.com
+- 🐦 **Twitter**: [@AkrashNoor](https://twitter.com/AkrashNoor)
 
 ## 🎯 Roadmap
 
