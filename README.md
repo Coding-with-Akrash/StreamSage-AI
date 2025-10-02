@@ -78,19 +78,6 @@ streamlit run streamly.py
 - **Session Management** - Track usage and performance
 - **Export Settings** - Customize code generation parameters
 
-## 📸 Screenshots
-
-<div align="center">
-  <img src="imgs/streamsage_dashboard.png" alt="StreamSage Dashboard" width="800"/>
-  <p><em>🏠 Modern Dark Theme Dashboard</em></p>
-
-  <img src="imgs/streamsage_code_generator.png" alt="Code Generator" width="800"/>
-  <p><em>🚀 Advanced Code Generation Interface</em></p>
-
-  <img src="imgs/streamsage_analyzer.png" alt="Project Analyzer" width="800"/>
-  <p><em>🔍 Comprehensive Project Analysis</em></p>
-</div>
-
 ## 🛠️ Technical Stack
 
 ### **Core Technologies**
