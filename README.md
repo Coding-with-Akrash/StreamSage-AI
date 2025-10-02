@@ -152,11 +152,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 📞 Support & Contact
 
-### **Get Help**
-- 📖 **Documentation**: [StreamSage Docs](https://github.com/Coding-with-Akrash/StreamSage/wiki)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Coding-with-Akrash/StreamSage/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Coding-with-Akrash/StreamSage/discussions)
-
 ### **Connect with Developer**
 - 🐙 **GitHub**: [@Coding-with-Akrash](https://github.com/Coding-with-Akrash)
 - 📧 **Email**: akrash.noor@example.com
