@@ -140,9 +140,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📞 Support & Contact
 
 ### **Connect with Developer**
-- 🐙 **GitHub**: [@Coding-with-Akrash](https://github.com/Coding-with-Akrash)
-- 📧 **Email**: akrash.noor@example.com
-- 🐦 **Twitter**: [@AkrashNoor](https://twitter.com/AkrashNoor)
+- 🐙 **GitHub**: [Coding-with-Akrash](https://github.com/Coding-with-Akrash)
+- 📧 **Email**: akrashnoor2580@gmail.com
+- 🐦 **Twitter**: [AkrashNoor](https://twitter.com/AkrashNoor)
 
 ## 🎯 Roadmap
 
