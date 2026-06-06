@@ -8,7 +8,7 @@
   [![Streamlit Version](https://img.shields.io/badge/streamlit-1.36+-red.svg)](https://streamlit.io)
   [![OpenAI GPT-4o-mini](https://img.shields.io/badge/GPT--4o--mini-powered-green.svg)](https://openai.com)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Stars](https://img.shields.io/github/stars/Coding-with-Akrash/StreamSage?style=social)](https://github.com/Coding-with-Akrash/StreamSage)
+  [![Stars](https://img.shields.io/github/stars/Coding-with-Akrash/StreamSage-AI?style=social)](https://github.com/Coding-with-Akrash/StreamSage-AI)
 </div>
 
 ## ✨ What Makes StreamSage Special?
