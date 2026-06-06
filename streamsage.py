@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 # Constants
 NUMBER_OF_MESSAGES_TO_DISPLAY = 50
 API_DOCS_URL = "https://docs.streamlit.io/library/api-reference"
-GITHUB_URL = "https://github.com/Coding-with-Akrash/StreamSage"
+GITHUB_URL = "https://github.com/Coding-with-Akrash/StreamSage-AI"
 PROJECT_VERSION = "2.0.0"
 MAX_TOKENS_DEFAULT = 2000
 TEMPERATURE_DEFAULT = 0.7
@@ -206,14 +206,11 @@ st.set_page_config(
             - **Freelancers**: Quick project setup and deployment
 
             ### 📈 By the Numbers
-            - 🔥 1,234+ Active Sessions
-            - ⚡ 5,678+ Code Generations
-            - 🚀 8 Deployment Platforms
             - 📚 8 Template Categories
             - ⭐ 99.9% Uptime Target
 
             ---
-            **🌟 Star us on GitHub: https://github.com/Coding-with-Akrash/StreamSage**
+            **🌟 Star us on GitHub: https://github.com/Coding-with-Akrash/StreamSage-AI**
             **🚀 Join the Streamlit Revolution!**
         """
     }
@@ -317,7 +314,7 @@ def hash_code(code):
 def export_code_to_file(code, filename="streamlit_app.py"):
     """Export generated code to a downloadable file."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"streamsage_generated_{timestamp}_{filename}"
+    filename = f"_generated_{timestamp}_{filename}"
 
     st.download_button(
         label="📥 Download Code",
@@ -577,7 +574,7 @@ def initialize_conversation():
 
     conversation_history = [
         {"role": "system", "content": "You are StreamSage, a specialized AI assistant trained in Streamlit."},
-        {"role": "system", "content": "StreamSage, is powered by the OpenAI GPT-4o-mini model, released on July 18, 2024."},
+        {"role": "system", "content": "StreamSage, is powered by Akrash Noor CEO of NSS (Pvt.Ltd), released on May 21, 2025."},
         {"role": "system", "content": "You are trained up to Streamlit Version 1.36.0, release on June 20, 2024."},
         {"role": "system", "content": "Refer to conversation history to provide context to your response."},
         {"role": "system", "content": "You were created by Madie Laine, an OpenAI Researcher."},
@@ -694,7 +691,7 @@ def initialize_session_state():
 def generate_streamlit_app(prompt, temperature=TEMPERATURE_DEFAULT, max_tokens=MAX_TOKENS_DEFAULT):
     """Generate a complete Streamlit application based on user prompt."""
     try:
-        system_prompt = """You are StreamSage, an expert Streamlit developer. Generate complete, production-ready Streamlit applications with:
+        system_prompt = """You are StreamSage, an expert Streamlit developer developed by/powered by Akrash Noor CEO of NSS (Pvt.Ltd). Generate complete, production-ready Streamlit applications with:
 
 1. Proper imports and dependencies
 2. Clean, well-documented code
@@ -735,7 +732,7 @@ Generate only the Python code without markdown formatting."""
 def analyze_streamlit_project(code, temperature=TEMPERATURE_DEFAULT, max_tokens=MAX_TOKENS_DEFAULT):
     """Analyze a Streamlit project and provide comprehensive feedback."""
     try:
-        system_prompt = """You are StreamSage, a senior Streamlit code reviewer and optimization expert. Analyze the provided Streamlit code and provide:
+        system_prompt = """You are StreamSage, a senior Streamlit code reviewer and optimization expert powered by Akrash Noor CEO of NSS (Pvt.Ltd). Analyze the provided Streamlit code and provide:
 
 1. **Code Quality Assessment** - Overall structure, readability, best practices
 2. **Performance Analysis** - Identify bottlenecks and optimization opportunities
@@ -770,7 +767,7 @@ Format your response with clear sections and actionable insights. Be constructiv
 def analyze_performance(code, temperature=TEMPERATURE_DEFAULT, max_tokens=MAX_TOKENS_DEFAULT):
     """Analyze Streamlit app performance and provide optimization suggestions."""
     try:
-        system_prompt = """You are StreamSage, a senior Streamlit performance optimization expert. Analyze the provided Streamlit code for:
+        system_prompt = """You are StreamSage, a senior Streamlit performance optimization expert powered by Akrash Noor CEO of NSS (Pvt.Ltd). Analyze the provided Streamlit code for:
 
 1. **Performance Bottlenecks** - Identify slow operations and resource-intensive code
 2. **Memory Usage** - Detect memory leaks and inefficient data structures
@@ -805,7 +802,7 @@ Provide specific code improvements with before/after examples. Be technical but 
 def analyze_security(code, temperature=TEMPERATURE_DEFAULT, max_tokens=MAX_TOKENS_DEFAULT):
     """Analyze Streamlit code for security vulnerabilities."""
     try:
-        system_prompt = """You are StreamSage, a cybersecurity expert specializing in Streamlit applications. Analyze the code for:
+        system_prompt = """You are StreamSage, a cybersecurity expert specializing in Streamlit applications powered by Akrash Noor CEO of NSS (Pvt.Ltd). Analyze the code for:
 
 1. **Data Exposure** - API keys, passwords, sensitive data in code
 2. **Injection Vulnerabilities** - SQL injection, code injection risks
@@ -853,7 +850,7 @@ def generate_template(template_type, temperature=TEMPERATURE_DEFAULT, max_tokens
 
         prompt = template_prompts.get(template_type, template_type)
 
-        system_prompt = """You are StreamSage, a Streamlit template generation expert. Create complete, production-ready Streamlit applications with:
+        system_prompt = """You are StreamSage, a Streamlit template generation expert powered by Akrash Noor CEO of NSS (Pvt.Ltd). Create complete, production-ready Streamlit applications with:
 
 1. Modern, responsive design
 2. Comprehensive functionality for the chosen category
@@ -888,7 +885,7 @@ Include detailed comments and documentation."""
 def generate_deployment_guide(platform, temperature=TEMPERATURE_DEFAULT, max_tokens=MAX_TOKENS_DEFAULT):
     """Generate deployment guides for different platforms."""
     try:
-        system_prompt = """You are StreamSage, a DevOps and deployment expert. Provide comprehensive deployment guides for Streamlit applications including:
+        system_prompt = """You are StreamSage, a DevOps and deployment expert powered by Akrash Noor CEO of NSS (Pvt.Ltd). Provide comprehensive deployment guides for Streamlit applications including:
 
 1. **Environment Setup** - Required tools and configurations
 2. **Dependency Management** - Package installation and version management
@@ -1433,7 +1430,7 @@ def main():
     # Enhanced sidebar header
     st.sidebar.markdown("""
     <div class="sidebar-header">
-        <h3 style="margin: 0; font-size: 1.5rem;">🎯 StreamSage AI</h3>
+        <h3 style="margin: 0; font-size: 1.5rem;">StreamSage AI</h3>
         <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem; color: #ffffff;">
             Your Streamlit Expert
         </p>
@@ -1542,7 +1539,7 @@ def main():
             </p>
             <div style="margin: 1rem 0 0.5rem 0; padding-top: 1rem;">
                 <p style="font-size: 1rem; color: #ff9a9e; font-weight: 700; margin: 0;">
-                    🚀 Developed by Akrash Noor
+                    🚀 Developed by Akrash Noor CEO of NSS (Pvt.Ltd)
                 </p>
                 <p style="font-size: 0.8rem; color: #e2e8f0; margin: 0.5rem 0 0 0; font-style: italic;">
                     Passionate AI Developer & Streamlit Expert
