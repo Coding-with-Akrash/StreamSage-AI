@@ -113,7 +113,7 @@ We welcome contributions! Here's how you can help:
 ### **Development Setup**
 ```bash
 # Fork and clone
-git clone https://github.com/your-username/StreamSage.git
+git clone https://github.com/Coding-with-Akrash/StreamSage-AI
 cd StreamSage
 
 # Create virtual environment
